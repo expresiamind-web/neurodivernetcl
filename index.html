@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Neurodivernet: Plataforma de Apoyo a la Neurodiversidad</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/lucide-static@latest/dist/lucide.js"></script>
+    
+    <style>
+        /* --- PALETA DE COLORES CALMANTE E INCLUSIVA --- */
+        :root {
+            --calm-blue: #2A6AAB;    /* Azul Principal */
+            --mint-green: #6FD2AD;   /* Verde Menta (Acción) */
+            --lavender-bg: #F0F4FF;  /* Lavanda Pálido (Botones de pestaña inactivos) */
+            --page-bg-blue: #EBF1F9; /* FONDO DE PÁGINA AZUL SUAVE */
+            --dark-text: #34495E;    /* Texto Oscuro */
+            --medium-text: #5D6D7E;  /* Texto Secundario */
+            --border-light: #E0E7FF; /* Borde Suave */
+            --accent-yellow: #F4D03F; /* Amarillo */
+            --accent-red: #E76262;    /* Rojo */
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--page-bg-blue); /* <-- FONDO DE PÁGINA AZUL SUAVE */
+            color: var(--dark-text);
+        }
+        h1, h2, h3, h4, dt {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+        
+        .tab-button.active {
+            background-color: var(--mint-green); 
+            color: var(--dark-text); /* Texto más oscuro para contraste */
+            border: 2px solid var(--mint-green);
+            box-shadow: 0 4px 10px rgba(111, 210, 173, 0.4);
+            transform: scale(1.02);
+            font-weight: 700;
+        }
+        .tab-button {
+            background-color: var(--lavender-bg); /* Botón Inactivo Lavanda */
+            color: var(--calm-blue);
+            border: 2px solid var(--border-light); 
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .tab-button:hover {
+            background-color: #E6FFF6;
+            border-color: var(--mint-green);
+        }
+        .tab-content { display: none; }
+
+        .card {
+            background-color: white; 
+            border: 1px solid var(--border-light); 
+            border-radius: 1.5rem;
+            padding: 1.5rem; 
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Se eliminó la clase .illustration ya que no hay imágenes */
+
+        .diagram-block-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 2rem 0; }
+        .diagram-block { 
+            background-color: var(--lavender-bg); 
+            border: 2px solid var(--border-light); 
+            color: var(--dark-text); 
+            border-radius: 1.25rem; 
+            padding: 1.5rem; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08); 
+            transition: all 0.3s ease; 
+        }
+        .diagram-block:hover { transform: translateY(-5px); box-shadow: 0 6px 10px rgba(0,0,0,0.12); }
+        .diagram-block i { width: 40px; height: 40px; margin-bottom: 0.75rem; color: var(--calm-blue); }
+        .diagram-block h4 { font-size: 1.125rem; font-weight: 700; color: var(--calm-blue); }
+        .diagram-block-inatento { border-color: #A3BFED; background-color: #EFF6FF; }
+        .diagram-block-hiperactivo { border-color: #FDD6D6; background-color: #FEF6F6; }
+        .diagram-block-combinado { border-color: #B2E5CB; background-color: #F1FCF8; }
+        .diagram-block-inatento i, .diagram-block-inatento h4 { color: #538DD7; }
+        .diagram-block-hiperactivo i, .diagram-block-hiperactivo h4 { color: #E76262; }
+        .diagram-block-combinado i, .diagram-block-combinado h4 { color: #43A047; }
+        @media (max-width: 768px) { .diagram-block-container { grid-template-columns: 1fr; } }
+        
+        .thermometer-wrapper { max-width: 200px; margin: 2rem auto; text-align: center; }
+        .thermometer { height: 350px; width: 100px; border: 6px solid var(--calm-blue); border-radius: 25px; display: flex; flex-direction: column-reverse; overflow: hidden; margin: 0 auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
+        .thermometer-level { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); cursor: pointer; transition: all 0.3s ease; color: white; border-top: 1px solid rgba(255,255,255,0.3); }
+        .thermometer-level i { width: 32px; height: 32px; margin-bottom: 0.25rem; transition: transform 0.3s ease; }
+        .thermometer-level:hover { filter: brightness(1.1); }
+        .thermometer-level:hover i { transform: scale(1.1); }
+        .thermometer-level.level-1 { background-color: #A3D9B9; }
+        .thermometer-level.level-2 { background-color: #8CC4E3; }
+        .thermometer-level.level-3 { background-color: var(--accent-yellow); color: var(--dark-text); text-shadow: none; }
+        .thermometer-level.level-4 { background-color: #F7B59F; }
+        .thermometer-level.level-5 { background-color: var(--accent-red); }
+        
+        .option-wheel { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; max-width: 600px; margin: 0 auto; }
+        @media (min-width: 640px) { .option-wheel { grid-template-columns: repeat(3, 1fr); } }
+        .option-button { border: 2px solid var(--border-light); background-color: var(--lavender-bg); border-radius: 1.25rem; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 600; color: var(--dark-text); transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.05); text-align: center; }
+        .option-button:hover { border-color: var(--mint-green); background-color: #E6FFF6; color: var(--calm-blue); transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+        .option-button i { width: 48px; height: 48px; margin-bottom: 0.75rem; color: var(--calm-blue); transition: transform 0.3s ease; }
+        .option-button:hover i { transform: scale(1.1); color: var(--mint-green); }
+        
+        .glossary-term { border-left: 6px solid var(--mint-green); padding-left: 1.5rem; margin-bottom: 2rem; background-color: var(--lavender-bg); border-radius: 0.75rem; padding: 1rem 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .glossary-term dt { color: var(--calm-blue); font-size: 1.75rem; margin-bottom: 0.5rem; }
+        .glossary-term dd { color: var(--medium-text); line-height: 1.6; }
+        
+        .strategy-container { gap: 3rem; }
+        .strategy-pair { display: grid; grid-template-columns: repeat(1, 1fr); gap: 2rem; }
+        @media (min-width: 768px) { .strategy-pair { grid-template-columns: repeat(2, 1fr); } }
+        .strategy-card-before, .strategy-card-after { border-width: 3px; border-radius: 1.5rem; padding: 1.5rem; background-color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .strategy-card-before { border-color: #FCA5A5; background-color: #FEF2F2; color: #B91C1C; }
+        .strategy-card-after { border-color: #A7F3D0; background-color: #ECFDF5; color: #047857; }
+        .strategy-card-before h4, .strategy-card-after h4 { font-size: 1.5rem; display: flex; align-items: center; margin-bottom: 1rem; }
+        .strategy-card-before h4 i, .strategy-card-after h4 i { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 0.75rem; flex-shrink: 0; }
+        .strategy-card-before h4 i { background-color: #FEE2E2; color: #DC2626; }
+        .strategy-card-after h4 i { background-color: #D1FAE5; color: #10B981; }
+        .strategy-card-before p, .strategy-card-after p { color: var(--medium-text); }
+        .strategy-card-before .strategy-example, .strategy-card-after .strategy-example { border-left: 4px solid; padding-left: 1rem; margin-top: 0.75rem; font-style: italic; color: var(--medium-text); }
+        .strategy-card-before .strategy-example { border-color: #F87171; }
+        .strategy-card-after .strategy-example { border-color: #4ADE80; }
+        
+        .btn-primary { background-color: var(--calm-blue); color: white; padding: 0.75rem 2rem; border-radius: 9999px; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-primary:hover { background-color: #3B82F6; transform: translateY(-2px); box-shadow: 0 6px 10px rgba(0,0,0,0.15); }
+        .btn-secondary { background-color: var(--mint-green); color: var(--dark-text); padding: 0.75rem 2rem; border-radius: 9999px; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-secondary:hover { background-color: #6CE7BC; transform: translateY(-2px); box-shadow: 0 6px 10px rgba(0,0,0,0.15); }
+        .btn-outline { background-color: transparent; border: 2px solid var(--calm-blue); color: var(--calm-blue); padding: 0.75rem 2rem; border-radius: 9999px; font-weight: 700; transition: all 0.3s ease; }
+        .btn-outline:hover { background-color: var(--calm-blue); color: white; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="container mx-auto max-w-7xl p-4 sm:p-6 md:p-8" style="background-image: url(Proyecto_Neurodivernet/imagenes/neuro101.jpg);">
+        <!-- <img src="Proyecto_Neurodivernet/imagenes/neuro101.jpg" /> -->
+        <header class="bg-gradient-to-r from-calm-blue to-mint-green shadow-xl rounded-3xl p-8 md:p-10 lg:p-12 mb-8 overflow-hidden relative">
+            <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50 0 L100 100 L0 100 Z" fill="%23FFFFFF" opacity="0.1" transform="rotate(25 50 50) scale(1.5)" /></svg>'</div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between text-white">
+                
+                <div class="md:w-3/5 text-left mb-6 md:mb-0">
+                    <h1 class="text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">Neurodivernet</h1>
+                    <p class="text-xl lg:text-2xl mt-4 font-medium opacity-90">Tu plataforma de <strong class="font-bold">formación en neurodiversidad</strong> para la educación inclusiva.</p>
+                    <div class="mt-8">
+                         <button onclick="showTab('estrategias')" class="btn-secondary flex items-center">
+                            <i data-lucide="lightbulb" class="w-5 h-5 inline mr-2"></i>
+                            Explorar Estrategias
+                        </button>
+                    </div>
+                </div>
+
+                </div>
+        </header>
+
+        <main class="bg-white shadow-xl rounded-3xl overflow-hidden border-calm-blue border-t-4">
+            
+            <nav class="flex flex-wrap justify-center border-b-2 border-border-light p-4 bg-white" role="tablist">
+                <button class="tab-button py-3 px-6 rounded-full m-1 text-sm sm:text-base active shadow-md flex items-center" onclick="showTab('inicio')" role="tab" aria-controls="content-inicio" aria-selected="true"><i data-lucide="home" class="w-4 h-4 inline mr-2"></i> Inicio</button>
+                <button class="tab-button py-3 px-6 rounded-full m-1 text-sm sm:text-base flex items-center" onclick="showTab('neuro101')" role="tab" aria-controls="content-neuro101" aria-selected="false"><i data-lucide="brain" class="w-4 h-4 inline mr-2"></i> Neuro 101</button>
+                <button class="tab-button py-3 px-6 rounded-full m-1 text-sm sm:text-base flex items-center" onclick="showTab('estrategias')" role="tab" aria-controls="content-estrategias" aria-selected="false"><i data-lucide="lightbulb" class="w-4 h-4 inline mr-2"></i> Estrategias</button>
+                <button class="tab-button py-3 px-6 rounded-full m-1 text-sm sm:text-base flex items-center" onclick="showTab('crisis')" role="tab" aria-controls="content-crisis" aria-selected="false"><i data-lucide="alert-triangle" class="w-4 h-4 inline mr-2"></i> Crisis</button>
+                <button class="tab-button py-3 px-6 rounded-full m-1 text-sm sm:text-base flex items-center" onclick="showTab('cursos')" role="tab" aria-controls="content-cursos" aria-selected="false"><i data-lucide="graduation-cap" class="w-4 h-4 inline mr-2"></i> Cursos</button>
+                <button class="tab-button py-3 px-6 rounded-full m-1 text-sm sm:text-base flex items-center" onclick="showTab('herramientas')" role="tab" aria-controls="content-herramientas" aria-selected="false"><i data-lucide="compass" class="w-4 h-4 inline mr-2"></i> Herramientas</button>
+                <button class="tab-button py-3 px-6 rounded-full m-1 text-sm sm:text-base flex items-center" onclick="showTab('recursos')" role="tab" aria-controls="content-recursos" aria-selected="false"><i data-lucide="download" class="w-4 h-4 inline mr-2"></i> Recursos</button>
+                <button class="tab-button py-3 px-6 rounded-full m-1 text-sm sm:text-base flex items-center" onclick="showTab('autoevaluacion')" role="tab" aria-controls="content-autoevaluacion" aria-selected="false"><i data-lucide="check-square" class="w-4 h-4 inline mr-2"></i> Autoevaluación</button>
+                <button class="tab-button py-3 px-6 rounded-full m-1 text-sm sm:text-base flex items-center" onclick="showTab('glosario')" role="tab" aria-controls="content-glosario" aria-selected="false"><i data-lucide="book-open" class="w-4 h-4 inline mr-2"></i> Glosario</button>
+            </nav>
+
+            <div class="p-8 md:p-12 lg:p-16">
+
+                <div id="content-inicio" class="tab-content" role="tabpanel" style="display: block;">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-calm-blue mb-4">Construyendo Aulas Inclusivas</h2>
+                    <blockquote class="text-medium-text leading-relaxed mb-6 text-xl lg:text-2xl border-l-4 border-accent-yellow pl-4 italic">
+                        "La neurodiversidad es la idea de que las diferencias neurológicas son el resultado de una variación natural y normal del genoma humano."
+                    </blockquote>
+                    <p class="text-dark-text leading-relaxed mb-8 text-lg">
+                        Esta plataforma es una herramienta para empoderarte con el conocimiento y las estrategias prácticas para apoyar a todos tus estudiantes, reconociendo y valorando sus perfiles únicos de aprendizaje.
+                    </p>
+                    <h3 class="text-3xl font-semibold text-dark-text mb-6 border-b pb-3">Acceso Rápido</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <button onclick="showTab('crisis')" class="card text-center text-accent-red border-2 border-red-200 hover:border-red-400 hover:shadow-red-100 shadow-md flex flex-col items-center justify-center p-6"><i data-lucide="alert-octagon" class="w-12 h-12 mx-auto mb-3 text-red-500"></i><span class="font-bold text-lg">Manejo de Crisis</span></button>
+                        <button onclick="showTab('herramientas')" class="card text-center text-accent-yellow border-2 border-yellow-300 hover:border-yellow-500 hover:shadow-yellow-100 shadow-md flex flex-col items-center justify-center p-6"><i data-lucide="thermometer" class="w-12 h-12 mx-auto mb-3 text-yellow-600"></i><span class="font-bold text-lg">Herramientas</span></button>
+                        <button onclick="showTab('recursos')" class="card text-center text-calm-blue border-2 border-blue-200 hover:border-blue-400 hover:shadow-blue-100 shadow-md flex flex-col items-center justify-center p-6"><i data-lucide="download" class="w-12 h-12 mx-auto mb-3 text-calm-blue"></i><span class="font-bold text-lg">Recursos</span></button>
+                        <button onclick="showTab('cursos')" class="card text-center text-mint-green border-2 border-green-200 hover:border-green-400 hover:shadow-green-100 shadow-md flex flex-col items-center justify-center p-6"><i data-lucide="graduation-cap" class="w-12 h-12 mx-auto mb-3 text-mint-green"></i><span class="font-bold text-lg">Cursos</span></button>
+                    </div>
+                </div>
+
+                <div id="content-neuro101" class="tab-content" role="tabpanel">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-mint-green mb-6 text-center">Módulo: Neurodiversidad 101</h2>
+                    <h3 class="text-3xl font-semibold text-dark-text mb-3 flex items-center"><i data-lucide="book-open-text" class="w-7 h-7 mr-3 text-mint-green"></i> Conceptos Clave</h3>
+                    <p class="text-dark-text leading-relaxed mb-6 text-lg">La neurodiversidad no es un enfoque basado en el déficit ("trastorno"), sino en la diversidad. Reconoce que cerebros como el autista, el TDAH, o el disléxico, son simplemente variaciones naturales del cerebro humano.</p>
+                    <h3 class="text-3xl font-semibold text-dark-text mb-4 border-b pb-2 flex items-center"><i data-lucide="swords" class="w-7 h-7 mr-3 text-mint-green"></i> Mitos y Realidades</h3>
+                    <ul class="list-none space-y-4 text-dark-text mb-8">
+                        <li class="p-4 rounded-lg bg-red-50 border-l-4 border-red-300"><strong class="text-accent-red">Mito:</strong> "Todos los estudiantes autistas son genios en matemáticas."<br><strong class="text-mint-green">Realidad:</strong> El autismo es un espectro con una amplia variedad de habilidades e intereses.</li>
+                        <li class="p-4 rounded-lg bg-red-50 border-l-4 border-red-300"><strong class="text-accent-red">Mito:</strong> "El TDAH es solo falta de disciplina."<br><strong class="text-mint-green">Realidad:</strong> El TDAH es una condición neurobiológica que afecta las funciones ejecutivas.</li>
+                    </ul>
+                    <div class="bg-lavender-bg p-6 rounded-2xl border-l-8 border-calm-blue">
+                        <h2 class="text-3xl font-bold text-calm-blue mb-4 flex items-center"><i data-lucide="frown" class="w-7 h-7 mr-3"></i> Tema Destacado: Abordando la Alexitimia</h2>
+                        <p class="text-medium-text leading-relaxed mb-4 text-lg">La alexitimia es la dificultad para identificar, diferenciar y expresar las propias emociones.</p>
+                        <h3 class="text-2xl font-semibold text-dark-text mb-3">¿Cómo se manifiesta?</h3>
+                        <ul class="list-disc list-inside space-y-2 text-medium-text mb-6 pl-4">
+                            <li>Describe sensaciones físicas en lugar de emociones ("Me duele el estómago" en lugar de "Estoy nervioso").</li>
+                            <li>Explosiones emocionales "de la nada".</li>
+                            <li>Dificultad para entender las emociones de los demás.</li>
+                        </ul>
+                        <div class="bg-white border-l-4 border-mint-green text-dark-text p-4 rounded-lg shadow-md mt-4">
+                            <h3 class="font-bold text-lg text-calm-blue flex items-center"><i data-lucide="sparkles" class="w-5 h-5 mr-2 text-mint-green"></i> Estrategias de Apoyo</h3>
+                            <ul class="list-disc list-inside mt-2 space-y-2 text-medium-text pl-4">
+                                <li><strong>Usa apoyos visuales:</strong> Un "termómetro emocional" o tabla de emociones.</li>
+                                <li><strong>Conecta sensación con emoción:</strong> "Tu cara está caliente. A veces eso significa 'enojo'. ¿Es posible?"</li>
+                                <li><strong>Modela tu propio lenguaje emocional.</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-estrategias" class="tab-content" role="tabpanel">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-mint-green mb-6 text-center">Módulo: Estrategias Inclusivas</h2>
+                    <p class="text-medium-text leading-relaxed mb-8 text-lg text-center">Compara prácticas comunes con estrategias inclusivas (DUA).</p>
+                    <div class="strategy-container space-y-12">
+                        <div>
+                            <h3 class="text-3xl font-semibold text-calm-blue mb-6 border-b-2 pb-2 border-border-light">1. Comunicación y Claridad</h3>
+                            <div class="strategy-pair">
+                                <div class="strategy-card-before">
+                                    <h4><i data-lucide="x-circle"></i>Antes (Ambiguo)</h4>
+                                    <p>Usar lenguaje figurado, sarcasmo o instrucciones vagas.</p>
+                                    <p class="strategy-example">"¡Apúrate, vamos a salir!"</p>
+                                </div>
+                                <div class="strategy-card-after">
+                                    <h4><i data-lucide="check-circle"></i>Después (Claro y Literal)</h4>
+                                    <p>Usar lenguaje literal y dar pasos concretos con tiempo.</p>
+                                    <p class="strategy-example">"En 3 minutos haremos la fila. Guarda tu cuaderno."</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-semibold text-calm-blue mb-6 border-b-2 pb-2 border-border-light">2. Flexibilidad en Tareas</h3>
+                            <div class="strategy-pair">
+                                <div class="strategy-card-before">
+                                    <h4><i data-lucide="x-circle"></i>Antes (Rígido)</h4>
+                                    <p>Una sola forma de demostrar el aprendizaje (ej. un ensayo).</p>
+                                    <p class="strategy-example">"El examen final es un ensayo de 5 páginas."</p>
+                                </div>
+                                <div class="strategy-card-after">
+                                    <h4><i data-lucide="check-circle"></i>Después (Flexible - DUA)</h4>
+                                    <p>Múltiples formas de demostrar el aprendizaje.</p>
+                                    <p class="strategy-example">"Pueden elegir: 1) Ensayo, 2) Podcast, 3) Presentación."</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-semibold text-calm-blue mb-6 border-b-2 pb-2 border-border-light">3. Entorno Sensorial</h3>
+                            <div class="strategy-pair">
+                                <div class="strategy-card-before">
+                                    <h4><i data-lucide="x-circle"></i>Antes (Sobrecargado)</h4>
+                                    <p>Se espera silencio y quietud total.</p>
+                                    <p class="strategy-example">"¡Deja de moverte en la silla!"</p>
+                                </div>
+                                <div class="strategy-card-after">
+                                    <h4><i data-lucide="check-circle"></i>Después (Regulado)</h4>
+                                    <p>Se ofrecen opciones para la autorregulación sensorial.</p>
+                                    <p class="strategy-example">"Puedes usar un cojín o una banda elástica en tu silla."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-crisis" class="tab-content" role="tabpanel">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-accent-red mb-6 text-center">Módulo: Manejo de Crisis Emocionales</h2>
+                    <p class="text-medium-text leading-relaxed mb-8 text-lg border-l-4 border-accent-red pl-4">La desregulación es una respuesta intensa a un agobio sensorial o emocional. No es un "berrinche", es una sobrecarga del sistema nervioso.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-green-50 border-4 border-mint-green p-6 rounded-2xl shadow-lg">
+                            <h3 class="text-3xl font-semibold text-green-700 mb-4 flex items-center"><i data-lucide="check-circle" class="w-8 h-8 mr-3"></i> Qué HACER</h3>
+                            <ul class="list-disc list-inside space-y-3 text-medium-text text-lg">
+                                <li><strong>Mantén la calma:</strong> Tu calma es co-reguladora.</li>
+                                <li><strong>Asegura el entorno:</strong> Retira objetos peligrosos.</li>
+                                <li><strong>Reduce estímulos:</strong> Baja la voz, apaga luces.</li>
+                                <li><strong>Da espacio:</strong> No invadas su espacio personal.</li>
+                                <li><strong>Valida:</strong> "Veo que esto es muy difícil. Estoy aquí."</li>
+                                <li><strong>Usa lenguaje mínimo:</strong> Frases cortas. "Estás a salvo."</li>
+                            </ul>
+                        </div>
+                        <div class="bg-red-50 border-4 border-accent-red p-6 rounded-2xl shadow-lg">
+                            <h3 class="text-3xl font-semibold text-accent-red mb-4 flex items-center"><i data-lucide="x-octagon" class="w-8 h-8 mr-3"></i> Qué EVITAR</h3>
+                            <ul class="list-disc list-inside space-y-3 text-medium-text text-lg">
+                                <li><strong>No gritar ni amenazar.</strong></li>
+                                <li><strong>No intentar razonar:</strong> El cerebro racional está "desconectado".</li>
+                                <li><strong>No hacer preguntas complejas.</strong></li>
+                                <li><strong>No castigar.</strong></li>
+                                <li><strong>No inmovilizar.</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-8 bg-lavender-bg p-6 rounded-2xl border-l-4 border-calm-blue shadow-inner">
+                        <h3 class="text-xl font-bold text-calm-blue flex items-center"><i data-lucide="message-square" class="w-5 h-5 mr-2"></i> Después de la crisis</h3>
+                        <p class="text-medium-text mt-2 text-lg">Cuando esté calmado, ofrece confort (agua, manta). No hables de la crisis inmediatamente. Más tarde, habla sobre qué lo disparó y crea un plan.</p>
+                    </div>
+                </div>
+
+                <div id="content-cursos" class="tab-content" role="tabpanel">
+                    <div id="course-list-view">
+                        <h2 class="text-4xl lg:text-5xl font-bold text-calm-blue mb-6 text-center">Cursos y Talleres</h2>
+                        <p class="text-medium-text leading-relaxed mb-8 text-lg text-center">Cápsulas de aprendizaje breves con ejemplos prácticos y aplicados.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div class="card border-2 border-transparent hover:border-purple-300">
+                                <div class="video-placeholder mb-4 flex-col bg-purple-100 text-purple-600 border-purple-300"><i data-lucide="brain" class="w-12 h-12"></i></div>
+                                <h3 class="text-2xl font-semibold text-dark-text mb-2">Curso 1: TDAH en el Aula</h3>
+                                <p class="text-medium-text text-base">Estrategias de función ejecutiva y manejo del tiempo.</p>
+                                <button onclick="showCourse('curso1')" class="mt-4 w-full bg-purple-600 text-white py-3 rounded-xl font-bold hover:bg-purple-700 transition-colors shadow-md">Comenzar Curso</button>
+                            </div>
+                            <div class="card border-2 border-transparent hover:border-blue-300">
+                                <div class="video-placeholder mb-4 flex-col bg-blue-100 text-blue-600 border-blue-300"><i data-lucide="message-square" class="w-12 h-12"></i></div>
+                                <h3 class="text-2xl font-semibold text-dark-text mb-2">Curso 2: Comunicación Aumentativa</h3>
+                                <p class="text-medium-text text-base">Introducción a pictogramas y apoyos verbales.</p>
+                                <button onclick="showCourse('curso2')" class="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-md">Comenzar Curso</button>
+                            </div>
+                            <div class="card border-2 border-transparent hover:border-green-300">
+                                <div class="video-placeholder mb-4 flex-col bg-green-100 text-green-600 border-green-300"><i data-lucide="layout-grid" class="w-12 h-12"></i></div>
+                                <h3 class="text-2xl font-semibold text-dark-text mb-2">Curso 3: Diseño Universal (DUA)</h3>
+                                <p class="text-medium-text text-base">Aplicando los principios del DUA en tu planificación.</p>
+                                <button onclick="showCourse('curso3')" class="mt-4 w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition-colors shadow-md">Comenzar Curso</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="curso1-view" class="hidden space-y-8">
+                        <button onclick="showCourseList()" class="btn-outline flex items-center text-purple-600 border-purple-500 hover:bg-purple-500"><i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i> Volver a Cursos</button>
+                        <h2 class="text-4xl font-bold text-purple-700 mb-4">Curso 1: TDAH en el Aula</h2>
+                        <div class="card border-l-8 border-purple-500">
+                            <h3 class="text-2xl font-bold text-dark-text mb-3">Módulo 1: ¿Qué es el TDAH?</h3>
+                            <p class="text-medium-text leading-relaxed mb-4">El TDAH es una condición neurobiológica que afecta las <strong>funciones ejecutivas</strong> del cerebro (atención, control de impulsos, organización).</p>
+                            <h4 class="text-xl font-semibold text-dark-text mt-6 mb-4 text-center">Diagrama de Presentaciones</h4>
+                            <div class="diagram-block-container">
+                                <div class="diagram-block diagram-block-inatento"><i data-lucide="cloud-fog"></i><h4>Inatento</h4><p class="text-sm">Dificultad para enfocarse.</p></div>
+                                <div class="diagram-block diagram-block-hiperactivo"><i data-lucide="zap"></i><h4>Hiperactivo / Impulsivo</h4><p class="text-sm">Inquietud constante.</p></div>
+                                <div class="diagram-block diagram-block-combinado"><div class="flex space-x-2"><i data-lucide="cloud-fog"></i><i data-lucide="plus" class="!w-6 !h-6"></i><i data-lucide="zap"></i></div><h4>Combinado</h4><p class="text-sm">Mezcla de síntomas.</p></div>
+                            </div>
+                        </div>
+                        <div class="card border-l-8 border-purple-500">
+                            <h3 class="text-2xl font-bold text-dark-text mb-3">Módulo 2: Estrategias Clave de Función Ejecutiva</h3>
+                            <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-inner">
+                                <table class="min-w-full divide-y-2 divide-gray-200 bg-white text-base">
+                                    <thead class="bg-purple-100"><tr class="text-left"><th class="whitespace-nowrap px-4 py-3 font-bold text-purple-800">Desafío Común</th><th class="whitespace-nowrap px-4 py-3 font-bold text-purple-800">Estrategia de Apoyo</th></tr></thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr><td class="px-4 py-3 font-semibold text-dark-text">Dificultad para iniciar tareas</td><td class="px-4 py-3 text-medium-text"><strong>Fragmentación:</strong> Dividir la tarea en pasos muy pequeños.</td></tr>
+                                        <tr><td class="px-4 py-3 font-semibold text-dark-text">Olvidar instrucciones</td><td class="px-4 py-3 text-medium-text"><strong>Instrucciones Claras:</strong> Darlas de una en una, verbalmente Y por escrito.</td></tr>
+                                        <tr><td class="px-4 py-3 font-semibold text-dark-text">Fatiga mental rápida</td><td class="px-4 py-3 text-medium-text"><strong>Descansos Cerebrales:</strong> Permitir descansos cortos y cronometrados.</td></tr>
+                                        <tr><td class="px-4 py-3 font-semibold text-dark-text">Manejo del tiempo</td><td class="px-4 py-3 text-medium-text"><strong>Apoyos Visuales:</strong> Usar temporizadores visibles.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card border-l-8 border-purple-300 bg-purple-50">
+                            <h3 class="text-2xl font-bold text-purple-700 mb-4">Prueba de Aprendizaje: TDAH</h3>
+                            <div class="space-y-6">
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">1. Un estudiante no comienza la tarea. ¿Cuál es la estrategia MÁS efectiva?</legend>
+                                    <div><input type="radio" id="c1q1a" name="c1q1" value="a"><label for="c1q1a" class="ml-2 text-medium-text"> Repetirle que se ponga a trabajar, pero más fuerte.</label></div>
+                                    <div><input type="radio" id="c1q1b" name="c1q1" value="b"><label for="c1q1b" class="ml-2 text-medium-text"> Acercarse y decir: "Solo haz este primero. Te reviso en 2 minutos." (Fragmentación)</label></div>
+                                    <div><input type="radio" id="c1q1c" name="c1q1" value="c"><label for="c1q1c" class="ml-2 text-medium-text"> Quitarle el recreo si no termina.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">2. Un estudiante interrumpe constantemente. ¿Qué estrategia de entorno ayudaría MÁS?</legend>
+                                    <div><input type="radio" id="c1q2a" name="c1q2" value="a"><label for="c1q2a" class="ml-2 text-medium-text"> Darle un "fidget" silencioso o una banda elástica en la silla.</label></div>
+                                    <div><input type="radio" id="c1q2b" name="c1q2" value="b"><label for="c1q2b" class="ml-2 text-medium-text"> Cambiarlo de puesto lejos de sus amigos.</label></div>
+                                    <div><input type="radio" id="c1q2c" name="c1q2" value="c"><label for="c1q2c" class="ml-2 text-medium-text"> Ignorarlo hasta que levante la mano.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">3. ¿Por qué es mejor un temporizador VISUAL?</legend>
+                                    <div><input type="radio" id="c1q3a" name="c1q3" value="a"><label for="c1q3a" class="ml-2 text-medium-text"> Porque son más silenciosos.</label></div>
+                                    <div><input type="radio" id="c1q3b" name="c1q3" value="b"><label for="c1q3b" class="ml-2 text-medium-text"> Porque hace tangible el paso del tiempo, algo que es abstracto y difícil de gestionar.</label></div>
+                                    <div><input type="radio" id="c1q3c" name="c1q3" value="c"><label for="c1q3c" class="ml-2 text-medium-text"> Porque es más moderno.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">4. El "Refuerzo Positivo Inmediato" es crucial porque...</legend>
+                                    <div><input type="radio" id="c1q4a" name="c1q4" value="a"><label for="c1q4a" class="ml-2 text-medium-text"> El cerebro con TDAH tiene dificultades para conectar la acción con una recompensa lejana.</label></div>
+                                    <div><input type="radio" id="c1q4b" name="c1q4" value="b"><label for="c1q4b" class="ml-2 text-medium-text"> Es la única forma de que obedezca.</label></div>
+                                    <div><input type="radio" id="c1q4c" name="c1q4" value="c"><label for="c1q4c" class="ml-2 text-medium-text"> Funciona mejor que el castigo.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">5. ¿Cuál es el objetivo de las "Estrategias de Función Ejecutiva"?</legend>
+                                    <div><input type="radio" id="c1q5a" name="c1q5" value="a"><label for="c1q5a" class="ml-2 text-medium-text"> Hacer que trabaje más rápido.</label></div>
+                                    <div><input type="radio" id="c1q5b" name="c1q5" value="b"><label for="c1q5b" class="ml-2 text-medium-text"> Actuar como un "soporte externo" (andamio) para habilidades en desarrollo.</label></div>
+                                    <div><input type="radio" id="c1q5c" name="c1q5" value="c"><label for="c1q5c" class="ml-2 text-medium-text"> Curar el TDAH.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">6. Dividir una tarea grande en pasos pequeños se llama:</legend>
+                                    <div><input type="radio" id="c1q6a" name="c1q6" value="a"><label for="c1q6a" class="ml-2 text-medium-text"> Fragmentación.</label></div>
+                                    <div><input type="radio" id="c1q6b" name="c1q6" value="b"><label for="c1q6b" class="ml-2 text-medium-text"> Temporización.</label></div>
+                                    <div><input type="radio" id="c1q6c" name="c1q6" value="c"><label for="c1q6c" class="ml-2 text-medium-text"> Refuerzo positivo.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">7. Un estudiante que se distrae fácil y parece soñar despierto, tiene la presentación:</legend>
+                                    <div><input type="radio" id="c1q7a" name="c1q7" value="a"><label for="c1q7a" class="ml-2 text-medium-text"> Hiperactivo/Impulsivo.</label></div>
+                                    <div><input type="radio" id="c1q7b" name="c1q7" value="b"><label for="c1q7b" class="ml-2 text-medium-text"> Combinado.</label></div>
+                                    <div><input type="radio" id="c1q7c" name="c1q7" value="c"><label for="c1q7c" class="ml-2 text-medium-text"> Inatento.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">8. Las "Funciones Ejecutivas" se refieren a:</legend>
+                                    <div><input type="radio" id="c1q8a" name="c1q8" value="a"><label for="c1q8a" class="ml-2 text-medium-text"> La capacidad de correr rápido.</label></div>
+                                    <div><input type="radio" id="c1q8b" name="c1q8" value="b"><label for="c1q8b" class="ml-2 text-medium-text"> El "centro de control" del cerebro (organización, atención, impulsos).</label></div>
+                                    <div><input type="radio" id="c1q8c" name="c1q8" value="c"><label for="c1q8c" class="ml-2 text-medium-text"> La inteligencia académica.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">9. Un estudiante que se mueve y habla mucho tiene la presentación:</legend>
+                                    <div><input type="radio" id="c1q9a" name="c1q9" value="a"><label for="c1q9a" class="ml-2 text-medium-text"> Inatento.</label></div>
+                                    <div><input type="radio" id="c1q9b" name="c1q9" value="b"><label for="c1q9b" class="ml-2 text-medium-text"> Hiperactivo/Impulsivo.</label></div>
+                                    <div><input type="radio" id="c1q9c" name="c1q9" value="c"><label for="c1q9c" class="ml-2 text-medium-text"> Combinado.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">10. El TDAH es:</legend>
+                                    <div><input type="radio" id="c1q10a" name="c1q10" value="a"><label for="c1q10a" class="ml-2 text-medium-text"> Una condición neurobiológica.</label></div>
+                                    <div><input type="radio" id="c1q10b" name="c1q10" value="b"><label for="c1q10b" class="ml-2 text-medium-text"> Falta de disciplina o mala crianza.</label></div>
+                                    <div><input type="radio" id="c1q10c" name="c1q10" value="c"><label for="c1q10c" class="ml-2 text-medium-text"> Una excusa para no trabajar.</label></div>
+                                </fieldset>
+                            </div>
+                            <button onclick="checkTest('curso1', 10, ['b', 'a', 'b', 'a', 'b', 'a', 'c', 'b', 'b', 'a'])" class="mt-6 bg-purple-600 text-white py-3 px-6 rounded-xl font-bold hover:bg-purple-700 transition-colors shadow-lg">Ver Resultados</button>
+                            <div id="results-curso1" class="mt-4 text-lg font-semibold hidden"></div>
+                        </div>
+                    </div>
+                    <div id="curso2-view" class="hidden space-y-8">
+                        <button onclick="showCourseList()" class="btn-outline flex items-center text-blue-600 border-blue-500 hover:bg-blue-500"><i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i> Volver a Cursos</button>
+                        <h2 class="text-4xl font-bold text-blue-700 mb-4">Curso 2: Comunicación Aumentativa y Alternativa (CAA)</h2>
+                        <div class="card border-l-8 border-blue-500">
+                            <h3 class="text-2xl font-bold text-dark-text mb-3">Módulo 1: ¿Qué es la CAA?</h3>
+                            <p class="text-medium-text leading-relaxed mb-4">La CAA incluye todas las formas de comunicación (aparte del habla oral) que se utilizan para expresar pensamientos, necesidades, deseos e ideas.</p>
+                            <ul class="list-disc list-inside space-y-2 text-medium-text">
+                                <li><strong>Aumentativa:</strong> Apoya el habla existente (ej. usar gestos).</li>
+                                <li><strong>Alternativa:</strong> Se usa en lugar del habla (ej. un dispositivo).</li>
+                            </ul>
+                            <p class="text-dark-text font-semibold leading-relaxed mt-4 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-300"><strong>Importante:</strong> Usar CAA <strong>no impide</strong> el desarrollo del habla. Al contrario, a menudo lo fomenta al reducir la frustración.</p>
+                        </div>
+                        <div class="card border-l-8 border-blue-500">
+                            <h3 class="text-2xl font-bold text-dark-text mb-3">Módulo 2: Tipos de CAA</h3>
+                            <p class="text-medium-text leading-relaxed mb-4">La CAA se divide en dos categorías principales:</p>
+                            <div class="flex items-center justify-center p-6 bg-blue-50 rounded-xl mb-4 border border-blue-200 shadow-inner">
+                                <div class="text-center mx-4"><i data-lucide="hand-metal" class="w-12 h-12 text-blue-700 mx-auto mb-2"></i><h4 class="font-bold text-blue-800">1. Sin Ayuda</h4><p class="text-sm text-medium-text">Gestos, señas.</p></div>
+                                <i data-lucide="arrow-right-left" class="w-8 h-8 text-blue-500 mx-6"></i>
+                                <div class="text-center mx-4"><i data-lucide="tablet-smartphone" class="w-12 h-12 text-blue-700 mx-auto mb-2"></i><h4 class="font-bold text-blue-800">2. Con Ayuda</h4><p class="text-sm text-medium-text">Pictogramas, dispositivos.</p></div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-dark-text">1. Sin Ayuda (No-Tecnológica)</h4><p class="text-sm text-medium-text">Se usa el propio cuerpo.</p></div>
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-dark-text">2. Con Ayuda (Tecnológica)</h4><p class="text-sm text-medium-text">Se requiere un objeto (Baja o Alta Tec).</p></div>
+                            </div>
+                        </div>
+                        <div class="card border-l-8 border-blue-300 bg-blue-50">
+                            <h3 class="text-2xl font-bold text-blue-700 mb-4">Prueba de Aprendizaje: CAA</h3>
+                            <div class="space-y-6">
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">1. ¿Cuál es la estrategia MÁS importante para enseñar CAA?</legend>
+                                    <div><input type="radio" id="c2q1a" name="c2q1" value="a"><label for="c2q1a" class="ml-2 text-medium-text"> El modelado (el adulto usa el sistema del estudiante).</label></div>
+                                    <div><input type="radio" id="c2q1b" name="c2q1" value="b"><label for="c2q1b" class="ml-2 text-medium-text"> Pruebas semanales para memorizar los iconos.</label></div>
+                                    <div><input type="radio" id="c2q1c" name="c2q1" value="c"><label for="c2q1c" class="ml-2 text-medium-text"> Asegurarse de que solo la use para pedir cosas.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">2. ¿Usar CAA impide el desarrollo del habla?</legend>
+                                    <div><input type="radio" id="c2q2a" name="c2q2" value="a"><label for="c2q2a" class="ml-2 text-medium-text"> Sí, el estudiante se vuelve flojo y no intenta hablar.</label></div>
+                                    <div><input type="radio" id="c2q2b" name="c2q2" value="b"><label for="c2q2b" class="ml-2 text-medium-text"> No, de hecho, a menudo fomenta el habla al reducir la frustración.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">3. Usar gestos y lenguaje de señas es considerado CAA...</legend>
+                                    <div><input type="radio" id="c2q3a" name="c2q3" value="a"><label for="c2q3a" class="ml-2 text-medium-text"> Con Ayuda (Alta Tecnología).</label></div>
+                                    <div><input type="radio" id="c2q3b" name="c2q3" value="b"><label for="c2q3b" class="ml-2 text-medium-text"> Sin Ayuda (No Tecnológica).</label></div>
+                                    <div><input type="radio" id="c2q3c" name="c2q3" value="c"><label for="c2q3c" class="ml-2 text-medium-text"> Con Ayuda (Baja Tecnología).</label></div>
+                                </fieldset>
+                            </div>
+                            <button onclick="checkTest('curso2', 3, ['a', 'b', 'b'])" class="mt-6 bg-blue-600 text-white py-3 px-6 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg">Ver Resultados</button>
+                            <div id="results-curso2" class="mt-4 text-lg font-semibold hidden"></div>
+                        </div>
+                    </div>
+                    <div id="curso3-view" class="hidden space-y-8">
+                        <button onclick="showCourseList()" class="btn-outline flex items-center text-green-600 border-green-500 hover:bg-green-500"><i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i> Volver a Cursos</button>
+                        <h2 class="text-4xl font-bold text-green-700 mb-4">Curso 3: Diseño Universal de Aprendizaje (DUA)</h2>
+                        <div class="card border-l-8 border-green-500">
+                            <h3 class="text-2xl font-bold text-dark-text mb-3">Módulo 1: ¿Qué es el DUA?</h3>
+                            <p class="text-medium-text leading-relaxed mb-4">El DUA no es una estrategia, sino un <strong>marco de planificación curricular</strong> para crear experiencias de aprendizaje accesibles para <strong>todos</strong>.</p>
+                            <p class="text-dark-text font-semibold leading-relaxed bg-green-50 p-4 rounded-lg border-l-4 border-green-300"><strong>Analogía Clave:</strong> Es como una rampa en un edificio. Se diseñó para sillas de ruedas, pero beneficia a padres con coches, personas con maletas, etc. <strong>Lo esencial para algunos, es bueno para todos.</strong></p>
+                        </div>
+                        <div class="card border-l-8 border-green-500">
+                            <h3 class="text-2xl font-bold text-dark-text mb-3">Módulo 2: Los 3 Principios del DUA</h3>
+                            <p class="text-medium-text leading-relaxed mb-4">El DUA se basa en tres principios fundamentales:</p>
+                            <div class="flex flex-col md:flex-row items-center justify-around p-6 bg-green-50 rounded-xl mb-6 border border-green-200 shadow-inner">
+                                <div class="text-center mx-3 my-2"><i data-lucide="book-open-text" class="w-10 h-10 text-green-700 mx-auto mb-1"></i><h4 class="font-bold text-green-800">1. QUÉ (Representación)</h4></div>
+                                <div class="text-center mx-3 my-2"><i data-lucide="paintbrush" class="w-10 h-10 text-green-700 mx-auto mb-1"></i><h4 class="font-bold text-green-800">2. CÓMO (Expresión)</h4></div>
+                                <div class="text-center mx-3 my-2"><i data-lucide="heart" class="w-10 h-10 text-green-700 mx-auto mb-1"></i><h4 class="font-bold text-green-800">3. POR QUÉ (Implicación)</h4></div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-dark-text">1. Múltiples Formas de Representación (el "QUÉ")</h4><p class="text-sm text-medium-text mt-1">Ofrecer la información de diferentes maneras (texto, video, audio).</p></div>
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-dark-text">2. Múltiples Formas de Acción y Expresión (el "CÓMO")</h4><p class="text-sm text-medium-text mt-1">Dar opciones para demostrar lo que saben (podcast, cómic, ensayo).</p></div>
+                                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200"><h4 class="font-semibold text-dark-text">3. Múltiples Formas de Implicación (el "POR QUÉ")</h4><p class="text-sm text-medium-text mt-1">Conectar con los intereses de los estudiantes y mantenerlos motivados.</p></div>
+                            </div>
+                        </div>
+                        <div class="card border-l-8 border-green-300 bg-green-50">
+                            <h3 class="text-2xl font-bold text-green-700 mb-4">Prueba de Aprendizaje: DUA</h3>
+                            <div class="space-y-6">
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">1. Permitir elegir entre un ensayo o grabar un video es un ejemplo de...</legend>
+                                    <div><input type="radio" id="c3q1a" name="c3q1" value="a"><label for="c3q1a" class="ml-2 text-medium-text"> Representación (el "Qué").</label></div>
+                                    <div><input type="radio" id="c3q1b" name="c3q1" value="b"><label for="c3q1b" class="ml-2 text-medium-text"> Acción y Expresión (el "Cómo").</label></div>
+                                    <div><input type="radio" id="c3q1c" name="c3q1" value="c"><label for="c3q1c" class="ml-2 text-medium-text"> Implicación (el "Por qué").</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">2. La analogía de la "rampa del edificio" explica que el DUA...</legend>
+                                    <div><input type="radio" id="c3q2a" name="c3q2" value="a"><label for="c3q2a" class="ml-2 text-medium-text"> Solo beneficia a estudiantes con discapacidades físicas.</label></div>
+                                    <div><input type="radio" id="c3q2b" name="c3q2" value="b"><label for="c3q2b" class="ml-2 text-medium-text"> Es caro y difícil de implementar.</label></div>
+                                    <div><input type="radio" id="c3q2c" name="c3q2" value="c"><label for="c3q2c" class="ml-2 text-medium-text"> Beneficia a todos los estudiantes, aunque sea esencial solo para algunos.</label></div>
+                                </fieldset>
+                                <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">3. Mostrar un video y además entregar una transcripción es un ejemplo de...</legend>
+                                    <div><input type="radio" id="c3q3a" name="c3q3" value="a"><label for="c3q3a" class="ml-2 text-medium-text"> Múltiples Formas de Representación (el "Qué").</label></div>
+                                    <div><input type="radio" id="c3q3b" name="c3q3" value="b"><label for="c3q3b" class="ml-2 text-medium-text"> Múltiples Formas de Implicación (el "Por qué").</label></div>
+                                </fieldset>
+                            </div>
+                            <button onclick="checkTest('curso3', 3, ['b', 'c', 'a'])" class="mt-6 bg-green-600 text-white py-3 px-6 rounded-xl font-bold hover:bg-green-700 transition-colors shadow-lg">Ver Resultados</button>
+                            <div id="results-curso3" class="mt-4 text-lg font-semibold hidden"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-herramientas" class="tab-content" role="tabpanel">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-accent-yellow mb-6 text-center">Herramientas Visuales Rápidas</h2>
+                    <p class="text-medium-text leading-relaxed mb-8 text-lg text-center">Usa estas herramientas directamente en la pantalla con tu estudiante para ayudar en la comunicación y regulación.</p>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                        <div class="card">
+                            <h3 class="text-2xl font-semibold text-dark-text mb-4 text-center">Termómetro Emocional</h3>
+                            <p class="text-medium-text text-center mb-6">"¿Cómo te sientes ahora?"</p>
+                            <div class="thermometer-wrapper">
+                                <div class="thermometer">
+                                    <div class="thermometer-level level-5"><i data-lucide="alert-octagon"></i><span>5. Explosión</span></div>
+                                    <div class="thermometer-level level-4"><i data-lucide="cloud-lightning"></i><span>4. Ansioso</span></div>
+                                    <div class="thermometer-level level-3"><i data-lucide="cloud-drizzle"></i><span>3. Inquieto</span></div>
+                                    <div class="thermometer-level level-2"><i data-lucide="cloud"></i><span>2. Distraído</span></div>
+                                    <div class="thermometer-level level-1"><i data-lucide="sun"></i><span>1. Calmado</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3 class="text-2xl font-semibold text-dark-text mb-4 text-center">Opciones de Descanso Sensorial</h3>
+                            <p class="text-medium-text text-center mb-6">"¿Qué necesita tu cuerpo?"</p>
+                            <div class="option-wheel">
+                                <button class="option-button"><i data-lucide="wind"></i><span>Respirar</span></button>
+                                <button class="option-button"><i data-lucide="move"></i><span>Moverse/Estirar</span></button>
+                                <button class="option-button"><i data-lucide="glass-water"></i><span>Beber Agua</span></button>
+                                <button class="option-button"><i data-lucide="headphones"></i><span>Música/Silencio</span></button>
+                                <button class="option-button"><i data-lucide="hand"></i><span>Masaje de Manos</span></button>
+                                <button class="option-button"><i data-lucide="eye-off"></i><span>Cerrar Ojos</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-recursos" class="tab-content" role="tabpanel">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-calm-blue mb-6 text-center">Recursos y Herramientas</h2>
+                    <p class="text-medium-text leading-relaxed mb-8 text-lg text-center">Explora y descarga guías, protocolos e infografías para apoyar tu labor docente.</p>
+                    <div class="grid grid-cols-1 gap-10">
+                        <div class="text-center card bg-lavender-bg">
+                            <h3 class="text-3xl font-semibold text-accent-red mb-6">Diagrama: Pasos para el Manejo de Crisis</h3>
+                            <div class="space-y-4 max-w-md mx-auto">
+                                <div class="card !bg-red-100 !border-red-300 text-left border-2">
+                                    <div class="flex items-center mb-2"><i data-lucide="alert-triangle" class="w-6 h-6 text-red-700 mr-2"></i><h4 class="text-lg font-bold text-red-800">FASE 1: ALERTA ROJA (Crisis)</h4></div>
+                                    <ol class="list-decimal list-inside text-red-900 space-y-1"><li>Mantén la calma (Respira).</li><li>Asegura el entorno (Espacio seguro).</li><li>Reduce estímulos (Luces/Ruido).</li></ol>
+                                </div>
+                                <div class="flex justify-center"><i data-lucide="arrow-down" class="w-8 h-8 text-gray-400"></i></div>
+                                <div class="card !bg-yellow-50 !border-yellow-300 text-left border-2">
+                                    <div class="flex items-center mb-2"><i data-lucide="pause-circle" class="w-6 h-6 text-yellow-700 mr-2"></i><h4 class="text-lg font-bold text-yellow-800">FASE 2: APOYO Y ESPERA</h4></div>
+                                    <ol class="list-decimal list-inside text-yellow-900 space-y-1" start="4"><li>Ofrece apoyo minimalista ("Estoy aquí").</li><li>Espera (Sin preguntas / Sin castigar).</li><li>Ofrece confort (Agua, manta).</li></ol>
+                                </div>
+                                <div class="flex justify-center"><i data-lucide="arrow-down" class="w-8 h-8 text-gray-400"></i></div>
+                                <div class="card !bg-green-100 !border-green-300 text-left border-2">
+                                    <div class="flex items-center mb-2"><i data-lucide="lightbulb" class="w-6 h-6 text-green-700 mr-2"></i><h4 class="text-lg font-bold text-green-800">FASE 3: REFLEXIÓN (Post-Crisis)</h4></div>
+                                    <ol class="list-decimal list-inside text-green-900 space-y-1" start="7"><li>Habla después (Usa visuales).</li><li>Identifica disparadores.</li><li>Identifica un plan futuro.</li></ol>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-semibold text-calm-blue mb-4 mt-8">Protocolo de Acción ante Desregulación</h3>
+                            <div class="card border-l-8 border-accent-red bg-red-50 p-6">
+                                <h4 class="text-xl font-bold text-accent-red mb-3">PROTOCOLO NEURODIVERNET: Fase de Crisis</h4>
+                                <ol class="list-decimal list-inside space-y-2 text-medium-text">
+                                    <li><strong>Observar y Evaluar:</strong> Identifica señales. ¿Hay riesgo?</li>
+                                    <li><strong>Garantizar Seguridad:</strong> Actúa. Guía a un "espacio de calma".</li>
+                                    <li><strong>Mantener Calma y Tono Neutro:</strong> Tu estado emocional es clave.</li>
+                                    <li><strong>Ofrecer Apoyo Minimalista:</strong> "¿Necesitas espacio?".</li>
+                                    <li><strong>Reducir Estímulos:</strong> Baja luces, reduce ruido.</li>
+                                    <li><strong>Esperar:</strong> Permite que la crisis disminuya.</li>
+                                    <li><strong>Post-Crisis:</strong> Ofrece confort. Reflexiona más tarde.</li>
+                                </ol>
+                            </div>
+                            <button class="mt-4 btn-primary flex items-center"><i data-lucide="download" class="w-5 h-5 mr-2"></i> Descargar Protocolo</button>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-semibold text-calm-blue mb-4 mt-8">Guía Rápida: Comunicación Efectiva</h3>
+                            <div class="card border-l-8 border-mint-green bg-green-50 p-6">
+                                <h4 class="text-xl font-bold text-green-800 mb-3">Claves de Comunicación</h4>
+                                <ul class="list-disc list-inside space-y-2 text-medium-text">
+                                    <li><strong>Sé Literal:</strong> Evita metáforas o sarcasmo.</li>
+                                    <li><strong>Corto y Claro:</strong> Divide en pasos. "Primero, abre tu libro. Luego, lee."</li>
+                                    <li><strong>Tiempo Extra:</strong> Permite tiempo para procesar y responder.</li>
+                                    <li><strong>Apoyos Visuales:</strong> Combina tus palabras con gestos o texto escrito.</li>
+                                    <li><strong>Confirma Compresión:</strong> Pregunta "Dime qué tienes que hacer ahora".</li>
+                                    <li><strong>Valida Siempre:</strong> Reconoce sus esfuerzos y sentimientos.</li>
+                                </ul>
+                            </div>
+                            <button class="mt-4 btn-primary flex items-center"><i data-lucide="download" class="w-5 h-5 mr-2"></i> Descargar Guía Rápida</button>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-semibold text-calm-blue mb-4 mt-8">Resumen: Normativa Chilena</h3>
+                            <div class="card border-l-8 border-purple-400 bg-purple-50 p-6">
+                                <h4 class="text-xl font-bold text-purple-800 mb-3">Leyes Clave en Chile</h4>
+                                <ul class="list-disc list-inside space-y-3 text-medium-text">
+                                    <li><strong>Ley de Inclusión Escolar (Ley N° 20.845, 2015):</strong> Establece que los establecimientos deben ser inclusivos.</li>
+                                    <li><strong>Decreto N° 83 (2015):</strong> Aprueba criterios y orientaciones de adecuación curricular para NEE.</li>
+                                    <li><strong>Ley TEA (Ley N° 21.545, 2023):</strong> Promueve la inclusión y protección de los derechos de las personas TEA.</li>
+                                </ul>
+                            </div>
+                            <button class="mt-4 btn-primary flex items-center"><i data-lucide="download" class="w-5 h-5 mr-2"></i> Descargar Resumen Legal</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-autoevaluacion" class="tab-content" role="tabpanel">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-calm-blue mb-6 text-center">Autoevaluación</h2>
+                    <p class="text-medium-text leading-relaxed mb-8 text-lg text-center">Reflexiona sobre tus prácticas inclusivas con retroalimentación inmediata.</p>
+                    <div class="card bg-lavender-bg">
+                        <h3 class="text-2xl font-semibold text-dark-text mb-6">Test Rápido: ¿Qué tan inclusiva es mi aula?</h3>
+                        <div class="space-y-8">
+                            <fieldset class="space-y-3 bg-white p-4 rounded-xl shadow-sm">
+                                <legend class="font-semibold text-dark-text mb-2">Pregunta 1: Cuando un estudiante tiene dificultades para iniciar una tarea, yo suelo...</legend>
+                                <div class="flex items-center"><input id="aq1a" name="aq1" type="radio" value="a" class="h-4 w-4 text-calm-blue border-gray-300"><label for="aq1a" class="ml-3 block text-base text-medium-text">Repetir la instrucción con más firmeza.</label></div>
+                                <div class="flex items-center"><input id="aq1b" name="aq1" type="radio" value="b" class="h-4 w-4 text-calm-blue border-gray-300"><label for="aq1b" class="ml-3 block text-base text-medium-text">Dividir la tarea en pasos más pequeños y escribir el primer paso.</label></div>
+                                <div class="flex items-center"><input id="aq1c" name="aq1" type="radio" value="c" class="h-4 w-4 text-calm-blue border-gray-300"><label for="aq1c" class="ml-3 block text-base text-medium-text">Asumir que está siendo desafiante y aplicar una consecuencia.</label></div>
+                                <div id="feedback-aq1" class="mt-2 text-sm font-medium hidden p-3 rounded-lg"></div>
+                            </fieldset>
+                            <fieldset class="space-y-3 bg-white p-4 rounded-xl shadow-sm">
+                                <legend class="font-semibold text-dark-text mb-2">Pregunta 2: ¿Qué adaptaciones sensoriales ofrezco? (Marca todas las que apliquen)</legend>
+                                <div class="flex items-center"><input id="aq2a" name="aq2" type="checkbox" class="h-4 w-4 text-calm-blue border-gray-300 rounded"><label for="aq2a" class="ml-3 block text-base text-medium-text">Permito el uso de "fidgets" silenciosos.</label></div>
+                                <div class="flex items-center"><input id="aq2b" name="aq2" type="checkbox" class="h-4 w-4 text-calm-blue border-gray-300 rounded"><label for="aq2b" class="ml-3 block text-base text-medium-text">Permito el uso de auriculares con cancelación de ruido.</label></div>
+                                <div class="flex items-center"><input id="aq2c" name="aq2" type="checkbox" class="h-4 w-4 text-calm-blue border-gray-300 rounded"><label for="aq2c" class="ml-3 block text-base text-medium-text">Tengo un "espacio de calma" o rincón tranquilo.</label></div>
+                                <div class="flex items-center"><input id="aq2d" name="aq2" type="checkbox" class="h-4 w-4 text-calm-blue border-gray-300 rounded"><label for="aq2d" class="ml-3 block text-base text-medium-text">Intento atenuar las luces fluorescentes.</label></div>
+                                <div id="feedback-aq2" class="mt-2 text-sm font-medium hidden p-3 rounded-lg"></div>
+                            </fieldset>
+                            <fieldset class="space-y-3 bg-white p-4 rounded-xl shadow-sm">
+                                <legend class="font-semibold text-dark-text mb-2">Pregunta 3: Mi estilo de comunicación principal al dar instrucciones es...</legend>
+                                <div class="flex items-center"><input id="aq3a" name="aq3" type="radio" value="a" class="h-4 w-4 text-calm-blue border-gray-300"><label for="aq3a" class="ml-3 block text-base text-medium-text">Principalmente verbal, explicando todo una vez.</label></div>
+                                <div class="flex items-center"><input id="aq3b" name="aq3" type="radio" value="b" class="h-4 w-4 text-calm-blue border-gray-300"><label for="aq3b" class="ml-3 block text-base text-medium-text">Verbal y visual (ej. digo la instrucción y la escribo en la pizarra).</label></div>
+                                <div class="flex items-center"><input id="aq3c" name="aq3" type="radio" value="c" class="h-4 w-4 text-calm-blue border-gray-300"><label for="aq3c" class="ml-3 block text-base text-medium-text">Verbal, y pido que me repitan lo que dije.</label></div>
+                                <div id="feedback-aq3" class="mt-2 text-sm font-medium hidden p-3 rounded-lg"></div>
+                            </fieldset>
+                        </div>
+                        <div class="flex space-x-4 mt-8">
+                            <button onclick="checkAutoevaluacion()" class="btn-primary">Ver Retroalimentación</button>
+                            <button onclick="resetAutoevaluacion()" class="btn-outline">Limpiar Respuestas</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="content-glosario" class="tab-content" role="tabpanel">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-mint-green mb-8 text-center">Glosario de Términos Clave</h2>
+                    <dl class="space-y-8">
+                        <div class="glossary-term"><dt>Neurodiversidad</dt><dd>La idea de que las diferencias neurológicas (autismo, TDAH, etc.) son variaciones naturales del genoma humano, no "desórdenes" que deban ser curados.</dd></div>
+                        <div class="glossary-term"><dt>Neurotípico (NT)</dt><dd>Término para describir a personas cuyo desarrollo neurológico se alinea con lo que la sociedad considera "estándar".</dd></div>
+                        <div class="glossary-term"><dt>Neurodivergente (ND)</dt><dd>Término para describir a personas cuyo cerebro funciona de manera diferente a la considerada "estándar".</dd></div>
+                        <div class="glossary-term"><dt>TDAH</dt><dd>Una condición neurobiológica que afecta las funciones ejecutivas (atención, control de impulsos, organización).</dd></div>
+                        <div class="glossary-term"><dt>TEA (Trastorno del Espectro Autista)</dt><dd>Una condición del neurodesarrollo que afecta cómo una persona interactúa socialmente, se comunica y experimenta el mundo sensorial.</dd></div>
+                        <div class="glossary-term"><dt>Alexitimia</dt><dd>Una dificultad para identificar, diferenciar y/o describir las propias emociones.</dd></div>
+                        <div class="glossary-term"><dt>DUA (Diseño Universal de Aprendizaje)</dt><dd>Un marco de planificación educativa que busca crear un currículo flexible y accesible para todos desde el inicio.</dd></div>
+                        <div class="glossary-term"><dt>CAA (Comunicación Aumentativa y Alternativa)</dt><dd>Cualquier sistema (gestos, pictogramas, dispositivos) que se usa para "aumentar" o "alternar" el habla oral.</dd></div>
+                        <div class="glossary-term"><dt>Función Ejecutiva</dt><dd>El "centro de control" o "gerente" del cerebro (planificación, organización, memoria de trabajo, etc.).</dd></div>
+                        <div class="glossary-term"><dt>Desregulación</dt><dd>Una respuesta intensa a una sobrecarga (sensorial, emocional). No es un "berrinche" voluntario, sino una pérdida temporal de control.</dd></div>
+                        <div class="glossary-term"><dt>Co-regulación</dt><dd>El proceso mediante el cual un individuo (docente) ayuda a otro (estudiante) a calmar su sistema nervioso usando su propia calma.</dd></div>
+                    </dl>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="text-center text-medium-text text-sm mt-8">
+            <p>Este es un recurso de apoyo hecho con ayuda de la IA y no reemplaza la ayuda profesional.</p>
+            <p>&copy; 2025 Neurodivernet. Creado como herramienta de apoyo docente.</p>
+            <p>Contáctanos en Instagram como @expresia o al correo expres.ia.mind@gmail.com</p>
+        </footer>
+    </div>
+
+    <script>
+        let currentCourse = null; // Variable para rastrear el curso activo
+
+        // Función de JavaScript para cambiar entre pestañas
+        function showTab(tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.style.display = 'none';
+            });
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+                button.setAttribute('aria-selected', 'false');
+            });
+            if (currentCourse) {
+                showCourseList();
+            }
+            const selectedContent = document.getElementById('content-' + tabName);
+            if (selectedContent) {
+                selectedContent.style.display = 'block';
+            }
+            const selectedButton = document.querySelector(`[onclick="showTab('${tabName}')"]`);
+            if (selectedButton) {
+                selectedButton.classList.add('active');
+                selectedButton.setAttribute('aria-selected', 'true');
+            }
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+        // --- Lógica de Cursos ---
+        function showCourse(courseId) {
+            currentCourse = courseId;
+            document.getElementById('course-list-view').style.display = 'none';
+            document.getElementById(courseId + '-view').style.display = 'block';
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+        function showCourseList() {
+            if (currentCourse) {
+                document.getElementById(currentCourse + '-view').style.display = 'none';
+                currentCourse = null;
+            }
+            document.getElementById('course-list-view').style.display = 'block';
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+        function checkTest(courseId, totalQuestions, correctAnswers) {
+            let score = 0;
+            for (let i = 1; i <= totalQuestions; i++) {
+                const radios = document.getElementsByName(courseId.charAt(0) + courseId.slice(-1) + 'q' + i);
+                for (let j = 0; j < radios.length; j++) {
+                    if (radios[j].checked && radios[j].value === correctAnswers[i - 1]) {
+                        score++;
+                    }
+                }
+            }
+            const resultsDiv = document.getElementById('results-' + courseId);
+            resultsDiv.textContent = `Tu puntuación: ${score} de ${totalQuestions}`;
+            resultsDiv.classList.remove('hidden', 'text-green-700', 'text-yellow-700', 'text-red-700');
+            if (score / totalQuestions >= 0.8) {
+                resultsDiv.classList.add('text-green-700');
+            } else if (score / totalQuestions >= 0.5) {
+                resultsDiv.classList.add('text-yellow-700');
+            } else {
+                resultsDiv.classList.add('text-red-700');
+            }
+        }
+
+        // --- Lógica de Autoevaluación ---
+        function checkAutoevaluacion() {
+            const aq1 = document.querySelector('input[name="aq1"]:checked');
+            const f1 = document.getElementById('feedback-aq1');
+            if (aq1) {
+                f1.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
+                if (aq1.value === 'b') {
+                    f1.textContent = '¡Excelente! Esta es una estrategia de función ejecutiva clave (fragmentación) que reduce la sensación de agobio.';
+                    f1.classList.add('bg-green-100', 'text-green-800');
+                } else {
+                    f1.textContent = 'Intenta de nuevo. Repetir o castigar puede aumentar la frustración. La clave es facilitar el inicio de la tarea.';
+                    f1.classList.add('bg-red-100', 'text-red-800');
+                }
+            }
+            const aq2a = document.getElementById('aq2a').checked;
+            const aq2b = document.getElementById('aq2b').checked;
+            const aq2c = document.getElementById('aq2c').checked;
+            const aq2d = document.getElementById('aq2d').checked;
+            const f2 = document.getElementById('feedback-aq2');
+            let count = (aq2a ? 1:0) + (aq2b ? 1:0) + (aq2c ? 1:0) + (aq2d ? 1:0);
+            f2.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-yellow-100', 'text-yellow-800');
+            if (count >= 2) {
+                f2.textContent = '¡Muy bien! Ofrecer múltiples opciones sensoriales es clave para la autorregulación.';
+                f2.classList.add('bg-green-100', 'text-green-800');
+            } else if (count === 1) {
+                f2.textContent = '¡Es un buen comienzo! Intenta incorporar más de una opción sensorial.';
+                f2.classList.add('bg-yellow-100', 'text-yellow-800');
+            } else {
+                f2.textContent = 'Este es un buen punto para empezar. Ofrecer adaptaciones sensoriales puede reducir la sobrecarga.';
+                f2.classList.add('bg-yellow-100', 'text-yellow-800');
+            }
+            const aq3 = document.querySelector('input[name="aq3"]:checked');
+            const f3 = document.getElementById('feedback-aq3');
+            if (aq3) {
+                f3.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-yellow-100', 'text-yellow-800');
+                if (aq3.value === 'b') {
+                    f3.textContent = '¡Perfecto! Combinar lo verbal y lo visual (Principio DUA) apoya la memoria de trabajo.';
+                    f3.classList.add('bg-green-100', 'text-green-800');
+                } else {
+                    f3.textContent = 'Es una opción válida, pero combinar lo verbal con lo visual suele ser más efectivo.';
+                    f3.classList.add('bg-yellow-100', 'text-yellow-800');
+                }
+            }
+        }
+        function resetAutoevaluacion() {
+            const radios = document.querySelectorAll('#content-autoevaluacion input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
+            const checkboxes = document.querySelectorAll('#content-autoevaluacion input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+            const feedbacks = document.querySelectorAll('#content-autoevaluacion [id^="feedback-"]');
+            feedbacks.forEach(fb => {
+                fb.classList.add('hidden');
+                fb.textContent = '';
+            });
+        }
+
+        // Carga inicial
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('inicio');
+            if (window.lucide) { 
+                window.lucide.createIcons();
+            }
+        });
+    </script>
+
+</body>
+</html>
