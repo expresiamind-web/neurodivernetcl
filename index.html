@@ -28,9 +28,19 @@
             --accent-red: #E76262;    /* Rojo */
         }
 
+        /* * ===============================================
+         * AQUÍ ESTÁ LA CORRECCIÓN 1
+         * ===============================================
+         * El fondo de toda la página ahora es tu imagen.
+        */
         body {
             font-family: 'Open Sans', sans-serif;
-            background-color: var(--page-bg-blue); /* <-- FONDO DE PÁGINA AZUL SUAVE */
+            /* AQUI ESTÁ TU IMAGEN DE FONDO */
+            background-image: url('https://media-front.elmostrador.cl/2025/09/Neurodiversidad-derechos-humanos-y-la-urgencia-de-una-respuesta-700x467.jpg');
+            background-size: cover; /* <-- Para que cubra toda la pantalla */
+            background-repeat: no-repeat; /* <-- Para que no se multiplique */
+            background-position: center; /* <-- Para que esté centrada */
+            background-attachment: fixed; /* <-- (Importante!) Para que no se mueva al hacer scroll */
             color: var(--dark-text);
         }
         h1, h2, h3, h4, dt {
@@ -149,17 +159,10 @@
 </head>
 <body class="min-h-screen">
 
-   <div 
-    class="container mx-auto max-w-7xl p-4 sm:p-6 md:p-8" 
-    style="
-        background-image: url(https://media-front.elmostrador.cl/2025/09/Neurodiversidad-derechos-humanos-y-la-urgencia-de-una-respuesta-700x467.jpg); 
-        background-size: cover;       /* Asegura que la imagen cubra todo el contenedor */
-        background-repeat: no-repeat;  /* EVITA LA MULTIPLICACIÓN */
-        background-position: center;   /* Centra la imagen */
-    ">
-        <!-- <img src="Proyecto_Neurodivernet/imagenes/neuro101.jpg" /> -->
+    <div class="container mx-auto max-w-7xl p-4 sm:p-6 md:p-8">
+        
         <header class="bg-gradient-to-r from-calm-blue to-mint-green shadow-xl rounded-3xl p-8 md:p-10 lg:p-12 mb-8 overflow-hidden relative">
-            <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50 0 L100 100 L0 100 Z" fill="%23FFFFFF" opacity="0.1" transform="rotate(25 50 50) scale(1.5)" /></svg>'</div>
+            <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50 0 L100 100 L0 100 Z" fill="%23FFFFFF" opacity="0.1" transform="rotate(25 50 50) scale(1.5)" /></svg>'); background-size: cover;"></div>
             
             <div class="relative z-10 flex flex-col md:flex-row items-center justify-between text-white">
                 
@@ -213,7 +216,7 @@
                 <div id="content-neuro101" class="tab-content" role="tabpanel">
                     <h2 class="text-4xl lg:text-5xl font-bold text-mint-green mb-6 text-center">Módulo: Neurodiversidad 101</h2>
                     <h3 class="text-3xl font-semibold text-dark-text mb-3 flex items-center"><i data-lucide="book-open-text" class="w-7 h-7 mr-3 text-mint-green"></i> Conceptos Clave</h3>
-                    <p class="text-dark-text leading-relaxed mb-6 text-lg">La neurodiversidad no es un enfoque basado en el déficit ("trastorno"), sino en la diversidad. Reconoce que cerebros como el autista, el TDAH, o el disléxico, son simplemente variaciones naturales del cerebro humano.</p>
+                    <p class="text-dark-text leading-relaxed mb-6 text-lg">La **neurodiversidad** no es un enfoque basado en el déficit ("trastorno"), sino en la diversidad. Reconoce que cerebros como el autista, el TDAH, o el disléxico, son simplemente variaciones naturales del cerebro humano.</p>
                     <h3 class="text-3xl font-semibold text-dark-text mb-4 border-b pb-2 flex items-center"><i data-lucide="swords" class="w-7 h-7 mr-3 text-mint-green"></i> Mitos y Realidades</h3>
                     <ul class="list-none space-y-4 text-dark-text mb-8">
                         <li class="p-4 rounded-lg bg-red-50 border-l-4 border-red-300"><strong class="text-accent-red">Mito:</strong> "Todos los estudiantes autistas son genios en matemáticas."<br><strong class="text-mint-green">Realidad:</strong> El autismo es un espectro con una amplia variedad de habilidades e intereses.</li>
@@ -419,7 +422,7 @@
                                     <div><input type="radio" id="c1q8c" name="c1q8" value="c"><label for="c1q8c" class="ml-2 text-medium-text"> La inteligencia académica.</label></div>
                                 </fieldset>
                                 <fieldset class="space-y-2"><legend class="font-semibold text-dark-text">9. Un estudiante que se mueve y habla mucho tiene la presentación:</legend>
-                                    <div><input type="radio" id="c1q9a" name="c1q9" value="a"><label for="c1q9a" class="ml-2 text-medium-text"> Inatento.</label></div>
+                                    <div><input type="radio" id="c1q9a" name="c1q9" value="a"><label for="c1q9a" class="ml-2 text-medium-text"> Inatento.</all>
                                     <div><input type="radio" id="c1q9b" name="c1q9" value="b"><label for="c1q9b" class="ml-2 text-medium-text"> Hiperactivo/Impulsivo.</label></div>
                                     <div><input type="radio" id="c1q9c" name="c1q9" value="c"><label for="c1q9c" class="ml-2 text-medium-text"> Combinado.</label></div>
                                 </fieldset>
@@ -683,7 +686,7 @@
             </div>
         </main>
 
-        <footer class="text-center text-medium-text text-sm mt-8">
+        <footer class="text-center text-medium-text text-sm mt-8 bg-white rounded-3xl shadow-xl p-6">
             <p>Este es un recurso de apoyo hecho con ayuda de la IA y no reemplaza la ayuda profesional.</p>
             <p>&copy; 2025 Neurodivernet. Creado como herramienta de apoyo docente.</p>
             <p>Contáctanos en Instagram como @expresia o al correo expres.ia.mind@gmail.com</p>
@@ -828,6 +831,4 @@
     </script>
 
 </body>
-
 </html>
-
